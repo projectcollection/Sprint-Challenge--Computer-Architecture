@@ -7,6 +7,7 @@ LDI     = 0b10000010
 PRN     = 0b01000111 
 MULT    = 0b10100010
 ADD     = 0b10100000
+CMP     = 0b10100111
 HLT     = 0b00000001
 
 PUSH    = 0b01000101
@@ -24,7 +25,8 @@ SP      = 7
 
 alu_op = {
     MULT:   "MULT",
-    ADD:    "ADD"
+    ADD:    "ADD",
+    CMP:    "CMP"
 }
 
 class CPU:
@@ -142,6 +144,15 @@ class CPU:
         #elif op == "SUB": etc
         elif op == "MULT":
             return (self.reg[reg_a] * self.reg[reg_b])
+        elif op == "CMP":
+            res = self.reg[reg_a] - self.reg[reg_b] 
+            if res > 0:
+                self.reg[FL] = self.reg[FL] | 0b00000010
+            elif res < 0: 
+                self.reg[FL] = self.reg[FL] | 0b00000100
+            else:
+                self.reg[FL] = self.reg[FL] | 0b00000001
+
         else:
             raise Exception("Unsupported ALU operation")
 
