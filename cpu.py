@@ -8,6 +8,9 @@ PRN     = 0b01000111
 MULT    = 0b10100010
 ADD     = 0b10100000
 CMP     = 0b10100111
+JMP     = 0b01010100
+JEQ     = 0b01010101
+JNE     = 0b01010110
 HLT     = 0b00000001
 
 PUSH    = 0b01000101
@@ -51,6 +54,9 @@ class CPU:
         self.branchtable[POP] = self._POP
         self.branchtable[CALL] = self._CALL
         self.branchtable[RET] = self._RET
+        self.branchtable[JMP] = self._JMP
+        self.branchtable[JEQ] = self._JEQ
+        self.branchtable[JNE] = self._JNE
         self.branchtable[ST] = self._ST
 
     def _LDI(self, inc):
@@ -105,6 +111,25 @@ class CPU:
         reg_index_b = self.ram_read(self.pc + 2)
         self.reg[reg_index_b] = self.reg[reg_index_a]
         self.pc = self.pc + inc
+
+    def _JMP(self, inc):
+        reg_index = self.ram_read(self.pc + 1)
+        self.pc = self.reg[reg_index]
+    
+    def _JEQ(self, inc):
+        if (self.reg[FL] & 0b00000001) == 1:
+            reg_index = self.ram_read(self.pc + 1)
+            self.pc = self.reg[reg_index]
+        else:
+            self.pc = self.pc + inc
+
+
+    def _JNE(self, inc):
+        if (self.reg[FL] & 0b00000001) == 0:
+            reg_index = self.ram_read(self.pc + 1)
+            self.pc = self.reg[reg_index]
+        else:
+            self.pc = self.pc + inc
 
     def ram_read(self, index):
         return self.ram[index]
